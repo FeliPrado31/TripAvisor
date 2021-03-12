@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
+import RegisterForm from "../../components/Account/RegisterForm";
 
 export default function Register() {
   return (
@@ -10,7 +11,7 @@ export default function Register() {
         resizeMode="contain"
       />
       <View style={style.viewForm}>
-        <Text>Register FORM</Text>
+        <RegisterForm />
       </View>
     </View>
   );
