@@ -7,6 +7,7 @@ import { map } from 'lodash'
 import Modal from '../Modal'
 import ChangeDisplayNameForm from '../Account/ChangeDisplayNameForm'
 import ChangeEmailForm from '../Account/ChangeEmailForm'
+import ChangePasswordForm from '../Account/ChangePasswordForm'
 
 
 
@@ -34,7 +35,7 @@ export default function AccountOptions(props) {
                 break;
             case "password":
                 setRenderComponent(
-                    <Text>Cambiando password</Text>
+                    <ChangePasswordForm setShowModal={setShowModal} toastRef={toastRef} />
                 )
                 setShowModal(true)
                 break;
