@@ -4,10 +4,8 @@ import { Overlay } from 'react-native-elements'
 
 export default function Modal(props) {
     const { visible, setIsVisible, children } = props
-    console.log(visible);
 
     const closeModal = () => {
-        console.log('pres');
         setIsVisible(false)
     }
 
