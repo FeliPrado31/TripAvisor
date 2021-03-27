@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react'
 import MapView from 'react-native-maps'
+import uuid from 'random-uuid-v4'
+
 
 import * as Permissions from 'expo-permissions'
 import * as ImagePicker from 'expo-image-picker'
 import * as Location from 'expo-location'
 
 
-import { View, ScrollView, Alert, StyleSheet, Dimensions, Text } from 'react-native'
+import { View, ScrollView, Alert, StyleSheet, Dimensions } from 'react-native'
 import { Icon, Avatar, Image, Input, Button } from 'react-native-elements'
 import { map, size, filter } from 'lodash'
 
 import Modal from '../Modal'
+
+//firebase
+import { firebaseApp } from '../../utils/firebase'
+// import firebase from 'firebase/app'
+
 
 const widthScreen = Dimensions.get("window").width
 
@@ -25,7 +32,60 @@ export default function AddRestaurantForm(props) {
     const [locationRestaurant, setLocationRestaurant] = useState(null)
 
     const addResturant = () => {
+        if (!restaurantName || !restaurantAddress || !restaurntDescription) {
+            toastRef.current.show("Todos los campos del formulario son obligatorios")
+        } else if (size(imagesSelected) === 0) {
+            toastRef.current.show("El restaurante tiene que tener almenos una foto")
+        } else if (!locationRestaurant) {
+            toastRef.current.show("Tienes que localizar el restaurante en el mapa")
+        } else {
+            setIsloading(true)
+            uploadImageStorage().then(res => {
+                firebaseApp.firestore().collection("restaurants").add({
+                    name: restaurantName,
+                    address: restaurantAddress,
+                    description: restaurntDescription,
+                    location: locationRestaurant,
+                    images: res,
+                    rating: 0,
+                    ratingTotal: 0,
+                    quantityVoting: 0,
+                    createAt: new Date(),
+                    createBy: firebaseApp.auth().currentUser.uid
+                }).then(() => {
+                    setIsloading(false)
+                    navigation.navigate("restaurants")
 
+                }).catch(() => {
+                    setIsloading(false)
+                    toastRef.current.show("Error al crear el restaurante, intentalo más tarde.")
+                })
+            })
+        }
+    }
+
+    /**
+     * Function to upload images to firebase storage
+     */
+    const uploadImageStorage = async () => {
+        const imageBlob = []
+
+        await Promise.all(
+            map(imagesSelected, async (image) => {
+                const response = await fetch(image)
+                const blob = await response.blob()
+                const ref = firebaseApp.storage().ref("restaurants").child(uuid())
+                await ref.put(blob).then(res => {
+                    await firebaseApp.storage().ref(`restaurants/${res.metadata.name}`)
+                        .getDownloadURL().then((photoUrl) => {
+                            imageBlob.push(photoUrl)
+                        })
+                })
+            })
+        )
+
+
+        return imageBlob
     }
 
 
@@ -34,6 +94,7 @@ export default function AddRestaurantForm(props) {
         <ScrollView style={style.scrollView}>
             <ImageRestaurant imageRestaurant={imagesSelected[0]} />
             <FormAdd
+                locationRestaurant={locationRestaurant}
                 setRestaurantName={setRestaurantName}
                 setRestaurantAddress={setRestaurantAddress}
                 setRestaurntDescription={setRestaurntDescription}
@@ -116,7 +177,7 @@ function Map(props) {
 }
 
 function FormAdd(props) {
-    const { setRestaurantName, setRestaurantAddress, setRestaurntDescription, setIsVisibleMap } = props
+    const { setRestaurantName, setRestaurantAddress, setRestaurntDescription, setIsVisibleMap, locationRestaurant } = props
     return (
         <View style={style.viewForm}>
             <Input
@@ -131,7 +192,7 @@ function FormAdd(props) {
                 rightIcon={{
                     type: "material-community",
                     name: "google-maps",
-                    color: "#c2c2c2",
+                    color: locationRestaurant ? "#00a680" : "#c2c2c2",
                     onPress: () => setIsVisibleMap(true)
                 }}
 
