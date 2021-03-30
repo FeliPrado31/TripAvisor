@@ -22,7 +22,7 @@ import { firebaseApp } from '../../utils/firebase'
 const widthScreen = Dimensions.get("window").width
 
 export default function AddRestaurantForm(props) {
-    const { toastRef, setIsloading, navigation } = props
+    const { toastRef, setIsLoading, navigation } = props
 
     const [restaurantName, setRestaurantName] = useState("")
     const [restaurantAddress, setRestaurantAddress] = useState("")
@@ -39,7 +39,7 @@ export default function AddRestaurantForm(props) {
         } else if (!locationRestaurant) {
             toastRef.current.show("Tienes que localizar el restaurante en el mapa")
         } else {
-            setIsloading(true)
+            setIsLoading(true)
             uploadImageStorage().then(res => {
                 firebaseApp.firestore().collection("restaurants").add({
                     name: restaurantName,
@@ -53,11 +53,11 @@ export default function AddRestaurantForm(props) {
                     createAt: new Date(),
                     createBy: firebaseApp.auth().currentUser.uid
                 }).then(() => {
-                    setIsloading(false)
+                    setIsLoading(false)
                     navigation.navigate("restaurants")
 
                 }).catch(() => {
-                    setIsloading(false)
+                    setIsLoading(false)
                     toastRef.current.show("Error al crear el restaurante, intentalo más tarde.")
                 })
             })
@@ -75,7 +75,7 @@ export default function AddRestaurantForm(props) {
                 const response = await fetch(image)
                 const blob = await response.blob()
                 const ref = firebaseApp.storage().ref("restaurants").child(uuid())
-                await ref.put(blob).then(res => {
+                await ref.put(blob).then(async res => {
                     await firebaseApp.storage().ref(`restaurants/${res.metadata.name}`)
                         .getDownloadURL().then((photoUrl) => {
                             imageBlob.push(photoUrl)
