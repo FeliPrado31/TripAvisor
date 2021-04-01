@@ -55,7 +55,7 @@ function FooterList(props) {
 function Restaurant(props) {
     const { restaurant, navigation } = props;
     const { images, name, id, description, address } = restaurant.item;
-    console.log(images[0]);
+    console.log(id);
     const imageRestaurant = images[0]
 
     const goRestaruant = () => {
