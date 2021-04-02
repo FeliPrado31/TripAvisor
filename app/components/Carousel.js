@@ -12,7 +12,7 @@ export default function CarouselComponent(props) {
 
     return (
         <Carousel
-            //     layout={"default"}
+            layout={"default"}
             data={arrayImages}
             sliderWidth={width}
             itemWidth={width}
