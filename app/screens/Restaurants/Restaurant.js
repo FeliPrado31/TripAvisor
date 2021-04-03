@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { Rating, Icon } from "react-native-elements";
 import { StyleSheet, ScrollView, Dimensions, View, Text } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { Rating } from "react-native-elements";
 
 //utils
 import { firebaseApp } from "../../utils/firebase";
@@ -43,6 +43,16 @@ export default function Restaurant(props) {
 
   return (
     <ScrollView vertical style={styles.viewBody}>
+      <View style={styles.viewFavorites}>
+        <Icon
+          type="material-community"
+          name="heart"
+          onPress={() => {}}
+          color="#00a68"
+          size={35}
+          underlayColor="transparent"
+        />
+      </View>
       <Carousel
         arrayImages={restaurant.images}
         height={250}
@@ -96,5 +106,15 @@ const styles = StyleSheet.create({
   rating: {
     position: "absolute",
     right: 0,
+  },
+  viewFavorites: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    zIndex: 2,
+    backgroundColor: "#fff",
+    borderBottomLeftRadius: 100,
+    padding: 5,
+    paddingLeft: 15,
   },
 });
