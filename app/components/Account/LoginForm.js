@@ -6,9 +6,16 @@ import { View, StyleSheet } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
 import { isEmpty } from "lodash";
 
+//utils
 import { validateEmail } from "../../utils/validation";
 
+//componets
 import Loading from "../Loading";
+
+
+firebase.auth().onAuthStateChanged((user) => {
+  user && navigation.navigate("account")
+})
 
 function defaultFormValue() {
   return {
@@ -40,7 +47,7 @@ export default function LoginForm(props) {
         .signInWithEmailAndPassword(formData.email, formData.password)
         .then((res) => {
           setLoading(false);
-          navigation.navigate("account");
+          navigation.goBack()
         })
         .catch((err) => {
           setLoading(false);
